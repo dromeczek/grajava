@@ -2,6 +2,7 @@ package main;
 
 import Tile.TileManager;
 import entity.Player;
+import object.SuperObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,13 +17,22 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxScreenCol=16;
     public int maxScreenRow=12;
     public final int screenWidth=tileSize*maxScreenCol; //768 pixels
-    public final int screenHeight=tileSize*maxScreenRow; //576 pixels
+    public final int screenHeight=tileSize*maxScreenRow; //576 pixel
+    // World settings
+    public final int maxWorldCol=50;
+    public final int maxWorldRow=50;
+    public  final int worldWidth=tileSize*maxWorldCol;
+    public  final int worldHeight=tileSize*maxWorldRow;
 //FPS
     int FPS=60;
     TileManager tileM=new TileManager(this);
+    public UI ui=new UI(this);
 Thread gameThread;
 KeyHandler keyH=new KeyHandler();
-Player player=new Player(this, keyH);
+public CollisionChecker cChecker=new CollisionChecker(this);
+public AssetSetter aSetter=new AssetSetter(this);
+public Player player=new Player(this, keyH);
+public SuperObject obj[]=new SuperObject[10];
 
 
 
@@ -32,6 +42,10 @@ Player player=new Player(this, keyH);
         this.setDoubleBuffered(true); //IMPROVE RENDERING PERFORMANCE
         this.addKeyListener(keyH);
         this.setFocusable(true);
+    }
+    public void setupGame() {
+        aSetter.setObject();
+
     }
     public void startGameThread()
     {
@@ -73,8 +87,19 @@ Player player=new Player(this, keyH);
     {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        //Tile
         tileM.draw(g2);
+        //OBJECT
+        for(int i=0;i<obj.length;i++)
+        {
+            if(obj[i]!=null) {
+            obj[i].draw(g2,this);
+            }
+        }
+        //Player
         player.draw(g2);
+        //UI
+        ui.draw(g2);
         g2.dispose();
     }
 
